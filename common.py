@@ -66,7 +66,7 @@ text_clf = Pipeline([
         transformer_list=[
 
             # Pipeline for pulling features from the post's subject line
-            ('subject', Pipeline([
+            ('name', Pipeline([
                 ('selector', ItemSelector(key='name')),
                 ('count_vec', CountVectorizer()),
                 ('tf_idf', TfidfTransformer()),
@@ -83,7 +83,7 @@ text_clf = Pipeline([
 
         # weight components in FeatureUnion
         transformer_weights={
-            'subject': 1.0,
+            'name': 1.0,
             'description': 1.0,
         },
     )),
