@@ -1,15 +1,11 @@
 from __future__ import print_function
+
 import json
-import numpy as np
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.feature_extraction import DictVectorizer
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.metrics import classification_report
-from sklearn.pipeline import FeatureUnion
-from sklearn.pipeline import Pipeline
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import FeatureUnion, Pipeline
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
+
 
 def read_file(path):
     
@@ -19,7 +15,8 @@ def read_file(path):
     
     return data
 
-# based in https://scikit-learn.org/0.18/auto_examples/hetero_feature_union.html
+# ItemSelector and text_clf are based in 
+# https://scikit-learn.org/0.18/auto_examples/hetero_feature_union.html
 
 class ItemSelector(BaseEstimator, TransformerMixin):
     """For data grouped by feature, select subset of data at a provided key.
@@ -59,20 +56,21 @@ class ItemSelector(BaseEstimator, TransformerMixin):
     def transform(self, data_dict):
         return data_dict[self.key]
 
+
 text_clf = Pipeline([
     
     # Use FeatureUnion to combine the features from subject and body
     ('union', FeatureUnion(
         transformer_list=[
 
-            # Pipeline for pulling features from the post's subject line
+            # Pipeline for pulling features from the name
             ('name', Pipeline([
                 ('selector', ItemSelector(key='name')),
                 ('count_vec', CountVectorizer()),
                 ('tf_idf', TfidfTransformer()),
             ])),
 
-            # Pipeline for standard bag-of-words model for body
+            # Pipeline for standard bag-of-words model for the description
             ('description', Pipeline([
                 ('selector', ItemSelector(key='description')),
                 ('count_vec', CountVectorizer()),
@@ -88,7 +86,7 @@ text_clf = Pipeline([
         },
     )),
 
-    # Use a SVC classifier on the combined features
+    # Use a MultinomialNB classifier on the combined features
     ('clf', MultinomialNB()),
 
 ])
