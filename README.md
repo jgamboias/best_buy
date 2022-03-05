@@ -18,4 +18,8 @@ The model is trained by running the notebook train_model.ipynb. This notebook ge
 ## 3. API
 
 The model is exposed trough an API that receives the “name” and “description” of a new product as input parameters, and outputs the “category” that this new product should be in.
-This API is started in a command line by calling `uvicorn app:app`
+This API is started in a command line by calling `uvicorn app:app`. The api will now be available in `http://127.0.0.1:8000`
+
+To run the api and classify a part the request sould be in the following format: \
+`http://127.0.0.1:8000/{"name":"battery","description":"Duracell battery"}`\
+The app will return a python dict in the format `{"category":"..."}` where `...` is the category returned by the model.
